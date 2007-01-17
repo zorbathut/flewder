@@ -28,6 +28,8 @@
 #define MODULE_NAME "flewder"
 #define MAKING_flewder
 
+#include "flewcore.h"
+
 #include "../module.h"
 #include "../channels.mod/channels.h"
 #include "../irc.mod/irc.h"
@@ -60,6 +62,8 @@ static int notc_flewder(char *nick, char *host, char *hand, char *text, char *ch
   printf("in notc\n");
   
   printf("%s, %s, %s, %s, %s\n", nick, host, hand, channel, text);
+  
+  return 0;
 }
 
 static int pub_flewder(char *nick, char *host, char *hand, char *channel, char *text)
@@ -71,20 +75,8 @@ static int pub_flewder(char *nick, char *host, char *hand, char *channel, char *
    */
   Context;
   
-  printf("in pub\n");
+  incoming(INC_PUBMSG, nick, host, text);
   
-  printf("%s, %s, %s, %s, %s\n", nick, host, hand, channel, text);
-  
-  struct chanset_t *chan = findchan_by_dname(channel);
-    
-  printf("%p\n", chan);
-  printf("%d\n", channel_seen(chan));
-
-  if (chan != NULL) {
-    char prefix[1024];
-    egg_snprintf(prefix, sizeof prefix, "PRIVMSG %s :", chan->name);
-    dprintf(DP_SERVER, "%sthis is a test", prefix);
-  }
   return 0;
 }
 
@@ -127,10 +119,9 @@ static cmd_t mynotc[] = {
 static char *flewder_close()
 {
   Context;
-  
-  p_tcl_bind_list H_temp;
 
   rem_builtins(H_pubm, mypub);
+  rem_builtins(H_notc, mynotc);
   
   module_undepend(MODULE_NAME);
   return NULL;

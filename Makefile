@@ -19,12 +19,17 @@ modules: ../../../flewder.$(MOD_EXT)
 	@rm -f ../flewder.o
 	mv flewder.o ../
 
-../../../flewder.$(MOD_EXT): ../flewder.o
-	$(LD) -o ../../../flewder.$(MOD_EXT) ../flewder.o $(XLIBS) $(MODULE_XLIBS)
+../flewcore.o:
+	$(CC) $(CFLAGS) $(CPPFLAGS) -DMAKING_MODS -c $(srcdir)/flewcore.cpp
+	@rm -f ../flewcore.o
+	mv flewcore.o ../
+
+../../../flewder.$(MOD_EXT): ../flewder.o ../flewcore.o
+	$(LD) -o ../../../flewder.$(MOD_EXT) ../flewder.o ../flewcore.o -lstdc++ $(XLIBS) $(MODULE_XLIBS)
 	$(STRIP) ../../../flewder.$(MOD_EXT)
 
 depend:
-	$(CC) $(CFLAGS) -MM $(srcdir)/flewder.c -MT ../flewder.o > .depend
+	$(CC) $(CFLAGS) -MM $(srcdir)/flewder.c  $(srcdir)/flewcore.cpp -MT ../flewder.o > .depend
 
 clean:
 	@rm -f .depend *.o *.$(MOD_EXT) *~
@@ -32,7 +37,7 @@ clean:
 distclean: clean
 
 #safety hash
-../flewder.o: ./flewder.c ../../../src/mod/module.h ../../../src/main.h \
+../flewder.o ../flewcore.o: ./flewder.c ./flewcore.cpp ./flewcore.h ../../../src/mod/module.h ../../../src/main.h \
   ../../../config.h ../../../lush.h ../../../src/lang.h \
   ../../../src/eggdrop.h ../../../src/flags.h ../../../src/cmdt.h \
   ../../../src/tclegg.h ../../../src/tclhash.h ../../../src/chan.h \

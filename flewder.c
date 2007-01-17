@@ -44,7 +44,9 @@
 static Function *global = NULL;
 static Function *server_funcs = NULL;
 static Function *irc_funcs = NULL;
-//static Function *channels_funcs = NULL;
+static Function *channels_funcs = NULL;
+
+char channel[] = "#flewder";
 
 /* Calculate the memory we keep allocated.
  */
@@ -59,25 +61,27 @@ static int flewder_expmem()
 static int notc_flewder(char *nick, char *host, char *hand, char *text, char *channel) {
   Context;
   
-  printf("in notc\n");
-  
-  printf("%s, %s, %s, %s, %s\n", nick, host, hand, channel, text);
+  if(channel && channel[0] == '#')
+    incoming(INC_NOTICE, nick, host, text);
   
   return 0;
 }
 
-static int pub_flewder(char *nick, char *host, char *hand, char *channel, char *text)
-{
-  /* Define a context.
-   *
-   * If the bot crashes after the context, it will be  the last mentioned
-   * in the resulting DEBUG file. This helps you debugging.
-   */
+static int pub_flewder(char *nick, char *host, char *hand, char *channel, char *text) {
   Context;
   
   incoming(INC_PUBMSG, nick, host, text);
   
   return 0;
+}
+
+void ban(char *mask, char *note, int seconds) {
+  Context;
+  
+  struct chanset_t *chan = findchan_by_dname(channel);
+  printf("%p\n", chan);
+  
+  u_addban(chan, mask, "floodscript", note, time(NULL) + seconds, 0);
 }
 
 /* A report on the module status.
@@ -177,6 +181,10 @@ char *flewder_start(Function *global_funcs)
   module_depend(MODULE_NAME, "server", 1, 0);
   server_funcs = me->funcs;
   add_builtins(H_notc, mynotc);
+  
+  me = module_find("channels", 1, 0);
+  module_depend(MODULE_NAME, "channels", 1, 0);
+  channels_funcs = me->funcs;
   
   return NULL;
 }

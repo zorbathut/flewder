@@ -40,7 +40,7 @@
  * flewder_start().
  */
 static Function *global = NULL;
-//static Function *server_funcs = NULL;
+static Function *server_funcs = NULL;
 static Function *irc_funcs = NULL;
 //static Function *channels_funcs = NULL;
 
@@ -52,6 +52,14 @@ static int flewder_expmem()
 
   Context;
   return size;
+}
+
+static int notc_flewder(char *nick, char *host, char *hand, char *text, char *channel) {
+  Context;
+  
+  printf("in notc\n");
+  
+  printf("%s, %s, %s, %s, %s\n", nick, host, hand, channel, text);
 }
 
 static int pub_flewder(char *nick, char *host, char *hand, char *channel, char *text)
@@ -70,18 +78,14 @@ static int pub_flewder(char *nick, char *host, char *hand, char *channel, char *
   struct chanset_t *chan = findchan_by_dname(channel);
     
   printf("%p\n", chan);
+  printf("%d\n", channel_seen(chan));
 
-  if ((chan != NULL) && channel_seen(chan)) {
+  if (chan != NULL) {
     char prefix[1024];
     egg_snprintf(prefix, sizeof prefix, "PRIVMSG %s :", chan->name);
-    dprintf(DP_HELP, "%sthis is a test", prefix);
+    dprintf(DP_SERVER, "%sthis is a test", prefix);
   }
   return 0;
-/*
-  putlog(LOG_CMDS, "*", "#%s# flewder", dcc[idx].nick);
-
-  dprintf(idx, "flewder!\n");
-  return 0;*/
 }
 
 /* A report on the module status.
@@ -112,6 +116,11 @@ static void flewder_report(int idx, int details)
 static cmd_t mypub[] = {
   /* command  flags  function     tcl-name */
   {"*",  "",    pub_flewder,  NULL},
+  {NULL,      NULL,  NULL,        NULL}  /* Mark end. */
+};
+static cmd_t mynotc[] = {
+  /* command  flags  function     tcl-name */
+  {"*",  "",    notc_flewder,  NULL},
   {NULL,      NULL,  NULL,        NULL}  /* Mark end. */
 };
 
@@ -172,6 +181,11 @@ char *flewder_start(Function *global_funcs)
   module_depend(MODULE_NAME, "irc", 1, 0);
   irc_funcs = me->funcs;
   add_builtins(H_pubm, mypub);
+
+	me = module_find("server", 1, 0);
+  module_depend(MODULE_NAME, "server", 1, 0);
+  server_funcs = me->funcs;
+  add_builtins(H_notc, mynotc);
   
   return NULL;
 }

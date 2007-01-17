@@ -2,7 +2,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-  void ban(char *mask, char *note, int seconds);
+  void ban(const char *mask, const char *note, int seconds);
 #ifdef __cplusplus
 };
 #endif

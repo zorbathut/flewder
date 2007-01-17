@@ -14,18 +14,18 @@ static: ../flewder.o
 
 modules: ../../../flewder.$(MOD_EXT)
 
-../flewder.o:
+../flewder.o: flewder.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) -DMAKING_MODS -c $(srcdir)/flewder.c
 	@rm -f ../flewder.o
 	mv flewder.o ../
 
-../flewcore.o:
-	$(CC) $(CFLAGS) $(CPPFLAGS) -DMAKING_MODS -c $(srcdir)/flewcore.cpp
+../flewcore.o: flewcore.cpp
+	g++ $(CFLAGS) $(CPPFLAGS) -DMAKING_MODS -c $(srcdir)/flewcore.cpp
 	@rm -f ../flewcore.o
 	mv flewcore.o ../
 
 ../../../flewder.$(MOD_EXT): ../flewder.o ../flewcore.o
-	$(LD) -o ../../../flewder.$(MOD_EXT) ../flewder.o ../flewcore.o -lstdc++ $(XLIBS) $(MODULE_XLIBS)
+	gcc -shared -o ../../../flewder.$(MOD_EXT) ../flewder.o ../flewcore.o -lstdc++ $(XLIBS) $(MODULE_XLIBS)
 	$(STRIP) ../../../flewder.$(MOD_EXT)
 
 depend:

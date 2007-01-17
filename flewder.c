@@ -58,11 +58,21 @@ static int flewder_expmem()
   return size;
 }
 
+void opcheck(int type, char *nick, char *host, char *text) {
+  struct chanset_t *chan = findchan_by_dname(channel);
+  if (chan) {
+    memberlist *m = ismember(chan, nick);
+    if (m && !chan_hasop(m) && !chan_hasvoice(m)) {
+      incoming(type, nick, host, text);
+    }
+  }
+}
+
 static int notc_flewder(char *nick, char *host, char *hand, char *text, char *channel) {
   Context;
   
   if(channel && channel[0] == '#')
-    incoming(INC_NOTICE, nick, host, text);
+    opcheck(INC_NOTICE, nick, host, text);
   
   return 0;
 }
@@ -70,7 +80,7 @@ static int notc_flewder(char *nick, char *host, char *hand, char *text, char *ch
 static int pub_flewder(char *nick, char *host, char *hand, char *channel, char *text) {
   Context;
   
-  incoming(INC_PUBMSG, nick, host, text);
+  opcheck(INC_PUBMSG, nick, host, text);
   
   return 0;
 }

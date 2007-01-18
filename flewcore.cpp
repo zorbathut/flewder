@@ -105,10 +105,12 @@ void infract(char *usernick, char *userhost, char *reason, int startlevel) {
   if(invincibility[userhost] > time(NULL))
     return;
   
-  invincibility[userhost] = time(NULL) + 15;  // 15-sec invincibility after an infraction, just so they don't stack up more
   userdata[userhost].first++;
   userdata[userhost].first = max(userdata[userhost].first, startlevel);
   userdata[userhost].second = time(NULL) + generateCooldownTime(userdata[userhost].first);
+  
+  if(userdata[userhost].first >= 2)
+    invincibility[userhost] = time(NULL) + 15;  // 15-sec invincibility after an infraction, just so they don't stack up more thanks to our own lag
   
   saveUserdata();
   

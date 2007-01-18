@@ -3,13 +3,31 @@
 #include <map>
 #include <string>
 #include <algorithm>
+#include <fstream>
 
 #include "flewcore.h"
 #include "flewder.h"
 
 using namespace std;
 
+map<string, int> invincibility;
 map<string, pair<int, int> > userdata;
+
+class Load {
+public:
+  Load() {
+    ifstream ifs("flewdata");
+    string steer;
+    while(getline(ifs, steer)) {
+      pair<int, int> dat;
+      char host[1024]; // this is long enough because irc messages can't exceed 512 anyway
+      if(sscanf(steer.c_str(), "%d %d %[^\n]", &dat.first, &dat.second, host) == 3) {
+        printf("Parsed %s with level %d and timeout %d\n", host, dat.first, dat.second);
+        userdata[host] = dat;
+      }
+    }
+  }
+} Loader;
 
 const int seconds = 1;
 const int minutes = seconds * 60;
@@ -84,7 +102,10 @@ void saveUserdata() {
 void infract(char *usernick, char *userhost, char *reason, int startlevel) {
   printf("Infraction - %s did %s level %d\n", userhost, reason, startlevel);
   testForDefract();
+  if(invincibility[userhost] > time(NULL))
+    return;
   
+  invincibility[userhost] = time(NULL) + 15;  // 15-sec invincibility after an infraction, just so they don't stack up more
   userdata[userhost].first++;
   userdata[userhost].first = max(userdata[userhost].first, startlevel);
   userdata[userhost].second = time(NULL) + generateCooldownTime(userdata[userhost].first);

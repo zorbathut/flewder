@@ -16,7 +16,7 @@ map<string, pair<int, int> > userdata;
 class Load {
 public:
   Load() {
-    ifstream ifs("flewdata");
+    ifstream ifs("/home/zorba/flewdata");
     string steer;
     while(getline(ifs, steer)) {
       pair<int, int> dat;
@@ -38,7 +38,7 @@ const int months = days * 30;
 int cooldown[] = {0, 10 * minutes, 60 * minutes, 24 * hours, 7 * days, 37 * days };
 int bantime[] =   {0, 0,                15 * seconds, 1 * hours, 1 * days, 1 * months };
 
-char chatterchannel[] = "#flewder";
+char chatterchannel[] = "#c++::ops::ticker";
 bool active = false;
 
 int generateCooldownTime(int level) {
@@ -93,7 +93,7 @@ void testForDefract() {
 }
 
 void saveUserdata() {
-  FILE *writ = fopen("flewdata", "w");
+  FILE *writ = fopen("/home/zorba/flewdata", "w");
   for(map<string, pair<int, int> >::iterator itr = userdata.begin(); itr != userdata.end(); itr++)
     fprintf(writ, "%d %d %s\n", itr->second.first, itr->second.second, itr->first.c_str());
   fclose(writ);

@@ -80,7 +80,7 @@ static int notc_flewder(char *nick, char *host, char *hand, char *text, char *in
 static int pub_flewder(char *nick, char *host, char *hand, char *in_channel, char *text) {
   Context;
   
-  dprintf("pub channel %s, compare %s, check %s\n", in_channel, channel, !egg_strcasecmp(in_channel, channel));
+  printf("pub channel %s, compare %s, check %s\n", in_channel, channel, !egg_strcasecmp(in_channel, channel));
   if(in_channel[0] == '#' && !egg_strcasecmp(in_channel, channel))
     opcheck(INC_PUBMSG, nick, host, text);
   

@@ -57,7 +57,7 @@ void saveUserdata() {
   fclose(writ);
 }
 
-void infract(char *userhost, char *reason, int startlevel) {
+void infract(char *usernick, char *userhost, char *reason, int startlevel) {
   printf("Infraction - %s did %s level %d\n", userhost, reason, startlevel);
   testForDefract();
   
@@ -71,7 +71,7 @@ void infract(char *userhost, char *reason, int startlevel) {
     // TODO: send /notice
   } else {
     printf("Banning %s for %d\n", (string("*!*@") + userhost).c_str(), generateBanTime(userdata[userhost].first));
-    ban((string("*!*@") + userhost).c_str(), reason, generateBanTime(userdata[userhost].first));
+    ban(usernick, (string("*!*@") + userhost).c_str(), reason, generateBanTime(userdata[userhost].first));
   }
 }
 
@@ -85,17 +85,17 @@ void incoming(int type, char *username, char *userhost, char *text) {
   userhost = strchr(userhost, '@') + 1;
   
   if(type == INC_NOTICE) {
-    infract(userhost, "No channel-wide notices allowed.", 2);
+    infract(username, userhost, "No channel-wide notices allowed.", 2);
     return;
   }
   
   if(strstr(text, "\002:")) { // I'm not sure if it's \002:\017 or \002:\002
-    infract(userhost, "Disable your bold colon immediately - \"/msg notabot bold colon\" for instructions.", 1);
+    infract(username, userhost, "Disable your bold colon immediately - \"/msg notabot bold colon\" for instructions.", 1);
     return;
   }
   
   if(strchr(text, '\002') || strchr(text, '\037') || strchr(text, '\026') || strchr(text, '\017') || strchr(text, '\001')) {
-    infract(userhost, "No color allowed.", 1);
+    infract(username, userhost, "No color allowed.", 1);
     return;
   }
 };

@@ -68,10 +68,10 @@ void opcheck(int type, char *nick, char *host, char *text) {
   }
 }
 
-static int notc_flewder(char *nick, char *host, char *hand, char *text, char *channel) {
+static int notc_flewder(char *nick, char *host, char *hand, char *text, char *in_channel) {
   Context;
   
-  if(channel && channel[0] == '#')
+  if(in_channel && in_channel[0] == '#' && stricmp(in_channel, channel))
     opcheck(INC_NOTICE, nick, host, text);
   
   return 0;
@@ -85,13 +85,15 @@ static int pub_flewder(char *nick, char *host, char *hand, char *channel, char *
   return 0;
 }
 
-void ban(char *mask, char *note, int seconds) {
+void ban(const char *nick, const char *mask, const char *note, int seconds) {
   Context;
   
   struct chanset_t *chan = findchan_by_dname(channel);
   printf("%p\n", chan);
   
   u_addban(chan, mask, "floodscript", note, time(NULL) + seconds, 0);
+  //dprintf(DP_MODE, "KICK %s %s: %s\n", channel, nick, note);
+  dprintf(DP_MODE, "MODE %s +b %s\n", channel, mask);
 }
 
 /* A report on the module status.

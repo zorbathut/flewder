@@ -20,6 +20,9 @@ const int months = days * 30;
 int cooldown[] = {0, 10 * minutes, 60 * minutes, 24 * hours, 7 * days, 37 * days };
 int bantime[] =   {0, 0,                15 * seconds, 1 * hours, 1 * days, 1 * months };
 
+char chatterchannel[] = "#flewder";
+bool active = false;
+
 int generateCooldownTime(int level) {
   level = min<int>(level, sizeof(cooldown) / sizeof(*cooldown) - 1);
   return cooldown[level];
@@ -28,6 +31,27 @@ int generateCooldownTime(int level) {
 int generateBanTime(int level) {
   level = min<int>(level, sizeof(cooldown) / sizeof(*cooldown) - 1);
   return bantime[level];
+}
+
+string generateBanMessage(string startstring, int time, string username) {
+  startstring += " [";
+  startstring += username;
+  startstring += ", ";
+  char tbf[50];
+  if(time % minutes) {
+    sprintf(tbf, "%ds", time);
+  } else if(time % hours) {
+    sprintf(tbf, "%dm", time / minutes);
+  } else if(time % days) {
+    sprintf(tbf, "%dh", time / hours);
+  } else if(time % months) {
+    sprintf(tbf, "%dd", time / days);
+  } else {
+    sprintf(tbf, "%dmo", time / months);
+  }
+  startstring += tbf;
+  startstring += "]";
+  return startstring;
 }
 
 void testForDefract() {
@@ -68,10 +92,20 @@ void infract(char *usernick, char *userhost, char *reason, int startlevel) {
   saveUserdata();
   
   if(userdata[userhost].first == 1) {
-    // TODO: send /notice
+    if(active) {
+      notice(usernick, (string(reason) + " Doing that again will result in increasingly long bans.").c_str());
+    } else {
+      msg(chatterchannel, ("Would have msged " + string(usernick) + " with error \"" + string(reason) + " Doing that again will result in increasingly long bans.\"").c_str());
+    }
   } else {
-    printf("Banning %s for %d\n", (string("*!*@") + userhost).c_str(), generateBanTime(userdata[userhost].first));
-    ban(usernick, (string("*!*@") + userhost).c_str(), reason, generateBanTime(userdata[userhost].first));
+    string targetmask = string("*!*@") + userhost;
+    string banmessage = generateBanMessage(reason, generateBanTime(userdata[userhost].first), usernick);
+    if(active) {
+      printf("Banning %s for %d\n", targetmask.c_str(), generateBanTime(userdata[userhost].first));
+      ban(usernick, targetmask.c_str(), banmessage.c_str(), generateBanTime(userdata[userhost].first));
+    } else {
+      msg(chatterchannel, ("Would have banned " + targetmask + " with message \"" + banmessage + "\"").c_str());
+    }
   }
 }
 

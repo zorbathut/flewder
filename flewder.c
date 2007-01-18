@@ -71,16 +71,17 @@ void opcheck(int type, char *nick, char *host, char *text) {
 static int notc_flewder(char *nick, char *host, char *hand, char *text, char *in_channel) {
   Context;
   
-  if(in_channel && in_channel[0] == '#' && stricmp(in_channel, channel))
+  if(in_channel && in_channel[0] == '#' && !egg_strcasecmp(in_channel, channel))
     opcheck(INC_NOTICE, nick, host, text);
   
   return 0;
 }
 
-static int pub_flewder(char *nick, char *host, char *hand, char *channel, char *text) {
+static int pub_flewder(char *nick, char *host, char *hand, char *in_channel, char *text) {
   Context;
   
-  opcheck(INC_PUBMSG, nick, host, text);
+  if(in_channel[0] == '#' && !egg_strcasecmp(in_channel, channel))
+    opcheck(INC_PUBMSG, nick, host, text);
   
   return 0;
 }
@@ -91,9 +92,17 @@ void ban(const char *nick, const char *mask, const char *note, int seconds) {
   struct chanset_t *chan = findchan_by_dname(channel);
   printf("%p\n", chan);
   
-  u_addban(chan, mask, "floodscript", note, time(NULL) + seconds, 0);
-  //dprintf(DP_MODE, "KICK %s %s: %s\n", channel, nick, note);
-  dprintf(DP_MODE, "MODE %s +b %s\n", channel, mask);
+  u_addban(chan, (char*)mask, "floodscript", (char*)note, time(NULL) + seconds, 0);
+  dprintf(DP_MODE, "MODE %s +b %s", channel, mask);
+  dprintf(DP_MODE, "KICK %s %s :%s", channel, nick, note);
+}
+
+void msg(const char *nick, const char *text) {
+  dprintf(DP_SERVER, "PRIVMSG %s :%s", nick, text);
+}
+
+void notice(const char *nick, const char *text) {
+  dprintf(DP_SERVER, "NOTICE %s :%s", nick, text);
 }
 
 /* A report on the module status.

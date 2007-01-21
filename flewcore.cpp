@@ -39,7 +39,7 @@ int cooldown[] = {0, 10 * minutes, 60 * minutes, 24 * hours, 7 * days, 37 * days
 int bantime[] =   {0, 0,                15 * seconds, 1 * hours, 1 * days, 1 * months };
 
 char chatterchannel[] = "#c++::ops::ticker";
-bool active = false;
+bool active = true;
 
 int generateCooldownTime(int level) {
   level = min<int>(level, sizeof(cooldown) / sizeof(*cooldown) - 1);
@@ -117,6 +117,7 @@ void infract(char *usernick, char *userhost, char *reason, int startlevel) {
   if(userdata[userhost].first == 1) {
     if(active) {
       notice(usernick, (string(reason) + " Doing that again will result in increasingly long bans.").c_str());
+      msg(chatterchannel, ("Msging " + string(usernick) + " with error \"" + string(reason) + " Doing that again will result in increasingly long bans.\"").c_str());
     } else {
       msg(chatterchannel, ("Would have msged " + string(usernick) + " with error \"" + string(reason) + " Doing that again will result in increasingly long bans.\"").c_str());
     }
@@ -126,6 +127,7 @@ void infract(char *usernick, char *userhost, char *reason, int startlevel) {
     if(active) {
       printf("Banning %s for %d\n", targetmask.c_str(), generateBanTime(userdata[userhost].first));
       ban(usernick, targetmask.c_str(), banmessage.c_str(), generateBanTime(userdata[userhost].first));
+      msg(chatterchannel, ("Banning " + targetmask + " with message \"" + banmessage + "\"").c_str());
     } else {
       msg(chatterchannel, ("Would have banned " + targetmask + " with message \"" + banmessage + "\"").c_str());
     }

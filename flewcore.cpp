@@ -149,7 +149,7 @@ void incoming(int type, char *username, char *userhost, char *text) {
   }
   
   if(strstr(text, "\002:")) { // I'm not sure if it's \002:\017 or \002:\002
-    infract(username, userhost, "Disable your bold colon immediately - \"/msg notabot bold colon\" for instructions.", 1);
+    infract(username, userhost, "Disable your bold colon immediately - \"/msg notabot calc bold colon\" for instructions.", 1);
     return;
   }
   

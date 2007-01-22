@@ -115,11 +115,12 @@ void infract(char *usernick, char *userhost, char *reason, int startlevel) {
   saveUserdata();
   
   if(userdata[userhost].first == 1) {
+    string banmessage = string(reason) + " Doing that again will result in increasingly longer bans.";
     if(active) {
-      notice(usernick, (string(reason) + " Doing that again will result in increasingly long bans.").c_str());
-      msg(chatterchannel, ("Msging " + string(usernick) + " with error \"" + string(reason) + " Doing that again will result in increasingly long bans.\"").c_str());
+      notice(usernick, banmessage.c_str());
+      msg(chatterchannel, ("Msging " + string(usernick) + " with error \"" + banmessage + "\"").c_str());
     } else {
-      msg(chatterchannel, ("Would have msged " + string(usernick) + " with error \"" + string(reason) + " Doing that again will result in increasingly long bans.\"").c_str());
+      msg(chatterchannel, ("Would have msged " + string(usernick) + " with error \"" + banmessage + "\"").c_str());
     }
   } else {
     string targetmask = string("*!*@") + userhost;

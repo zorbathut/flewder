@@ -77,6 +77,16 @@ static int notc_flewder(char *nick, char *host, char *hand, char *text, char *in
   return 0;
 }
 
+static int ctcp_flewder(char *nick, char *from, char *handle,
+                         char *object, char *keyword, char *text) {
+  Context;
+  
+  if(object && object[0] == '#' && !egg_strcasecmp(object, channel))
+    opcheck(INC_CTCP, nick, from, text);
+  
+  return 0;
+}
+
 static int pub_flewder(char *nick, char *host, char *hand, char *in_channel, char *text) {
   Context;
   
@@ -140,6 +150,11 @@ static cmd_t mynotc[] = {
   {"*",  "",    notc_flewder,  NULL},
   {NULL,      NULL,  NULL,        NULL}  /* Mark end. */
 };
+static cmd_t myctcp[] = {
+  /* command  flags  function     tcl-name */
+  {"*",  "",    ctcp_flewder,  NULL},
+  {NULL,      NULL,  NULL,        NULL}  /* Mark end. */
+};
 
 static char *flewder_close()
 {
@@ -147,6 +162,7 @@ static char *flewder_close()
 
   rem_builtins(H_pubm, mypub);
   rem_builtins(H_notc, mynotc);
+  rem_builtins(H_ctcp, myctcp);
   
   module_undepend(MODULE_NAME);
   return NULL;
@@ -202,6 +218,7 @@ char *flewder_start(Function *global_funcs)
   module_depend(MODULE_NAME, "server", 1, 0);
   server_funcs = me->funcs;
   add_builtins(H_notc, mynotc);
+  add_builtins(H_ctcp, myctcp);
   
   me = module_find("channels", 1, 0);
   module_depend(MODULE_NAME, "channels", 1, 0);

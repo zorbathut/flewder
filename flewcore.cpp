@@ -149,6 +149,11 @@ void incoming(int type, char *username, char *userhost, char *text) {
     return;
   }
   
+  if(type == INC_CTCP) {
+    infract(username, userhost, "No channel-wide CTCPs allowed.", 2);
+    return;
+  }
+  
   if(strstr(text, "\002:")) { // I'm not sure if it's \002:\017 or \002:\002
     infract(username, userhost, "Disable your bold colon immediately - \"/msg notabot calc bold colon\" for instructions.", 1);
     return;

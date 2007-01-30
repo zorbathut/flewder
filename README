@@ -1,0 +1,5 @@
+Put this directory in Eggdrop's src/mod directory, then build eggdrop like normal.
+
+Add "loadmodule flewder" to your eggdrop.conf.
+
+Note that there are hardcoded strings near the top of both source files (search for "#c++" to find them.) You might want to change those. Yeah, it's kind of nasty.

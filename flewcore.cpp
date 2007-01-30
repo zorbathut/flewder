@@ -35,8 +35,8 @@ const int hours = minutes * 60;
 const int days = hours * 24;
 const int months = days * 30;
 
-int cooldown[] = {0, 10 * minutes, 60 * minutes, 24 * hours, 7 * days, 37 * days };
-int bantime[] =   {0, 0,                15 * seconds, 1 * hours, 1 * days, 1 * months };
+int cooldown[] = {0, 60 * minutes, 10 * minutes, 60 * minutes, 24 * hours, 7 * days, 37 * days };
+int bantime[] =   {0, 0,                 0,                15 * seconds, 1 * hours, 1 * days, 1 * months };
 
 char chatterchannel[] = "#c++::ops::ticker";
 bool active = true;
@@ -115,6 +115,8 @@ void infract(char *usernick, char *userhost, char *reason, int startlevel) {
   saveUserdata();
   
   if(userdata[userhost].first == 1) {
+    msg(chatterchannel, (string(usernick) + " has been mildly evil (\"" + string(reason) + "\"), letting it slide for now").c_str());
+  } else if(userdata[userhost].first == 2) {
     string banmessage = string(reason) + " Doing that again will result in increasingly longer bans.";
     if(active) {
       notice(usernick, banmessage.c_str());
@@ -145,22 +147,22 @@ void incoming(int type, char *username, char *userhost, char *text) {
   userhost = strchr(userhost, '@') + 1;
   
   if(type == INC_NOTICE) {
-    infract(username, userhost, "No channel-wide notices allowed.", 2);
+    infract(username, userhost, "No channel-wide notices allowed.", 3);
     return;
   }
   
   if(type == INC_CTCP) {
-    infract(username, userhost, "No channel-wide CTCPs allowed.", 2);
+    infract(username, userhost, "No channel-wide CTCPs allowed.", 1);
     return;
   }
   
   if(strstr(text, "\002:")) { // I'm not sure if it's \002:\017 or \002:\002
-    infract(username, userhost, "Disable your bold colon immediately - \"/msg notabot calc bold colon\" for instructions.", 1);
+    infract(username, userhost, "Disable your bold colon immediately - \"/msg notabot calc bold colon\" for instructions.", 2);
     return;
   }
   
   if(strchr(text, '\002') || strchr(text, '\037') || strchr(text, '\026') || strchr(text, '\017') || strchr(text, '\001')) {
-    infract(username, userhost, "No color allowed.", 1);
+    infract(username, userhost, "No color allowed.", 2);
     return;
   }
 };

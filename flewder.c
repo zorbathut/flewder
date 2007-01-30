@@ -82,7 +82,7 @@ static int ctcp_flewder(char *nick, char *from, char *handle,
   Context;
   
   if(!strcmp(keyword, "ACTION"))
-    return; // argh
+    return 0; // argh
   
   if(object && object[0] == '#' && !egg_strcasecmp(object, channel))
     opcheck(INC_CTCP, nick, from, text);

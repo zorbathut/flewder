@@ -1,3 +1,7 @@
+This is a near-unmaintained Eggdrop module designed to discourage certain kinds of undesirable behavior. It's not really being modified anymore, nor is it supported for anyone besides me. It's mostly up here for posterity's sake. Consider the code public-domain.
+
+----
+
 Put this directory in Eggdrop's src/mod directory, then build eggdrop like normal.
 
 Add "loadmodule flewder" to your eggdrop.conf.

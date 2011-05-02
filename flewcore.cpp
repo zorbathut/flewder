@@ -115,14 +115,14 @@ void infract(char *usernick, char *userhost, char *reason, int startlevel) {
   saveUserdata();
   
   if(userdata[userhost].first == 1) {
-    msg(chatterchannel, (string(usernick) + " has been mildly evil (\"" + string(reason) + "\"), letting it slide for now").c_str());
+    //    msg(chatterchannel, (string(usernick) + " has been mildly evil (\"" + string(reason) + "\"), letting it slide for now").c_str());
   } else if(userdata[userhost].first == 2) {
     string banmessage = string(reason) + " Doing that again will result in increasingly longer bans.";
     if(active) {
       notice(usernick, banmessage.c_str());
-      msg(chatterchannel, ("Msging " + string(usernick) + " with error \"" + banmessage + "\"").c_str());
+      //msg(chatterchannel, ("Msging " + string(usernick) + " with error \"" + banmessage + "\"").c_str());
     } else {
-      msg(chatterchannel, ("Would have msged " + string(usernick) + " with error \"" + banmessage + "\"").c_str());
+      //msg(chatterchannel, ("Would have msged " + string(usernick) + " with error \"" + banmessage + "\"").c_str());
     }
   } else {
     string targetmask = string("*!*@") + userhost;
@@ -130,9 +130,9 @@ void infract(char *usernick, char *userhost, char *reason, int startlevel) {
     if(active) {
       printf("Banning %s for %d\n", targetmask.c_str(), generateBanTime(userdata[userhost].first));
       ban(usernick, targetmask.c_str(), banmessage.c_str(), generateBanTime(userdata[userhost].first));
-      msg(chatterchannel, ("Banning " + targetmask + " with message \"" + banmessage + "\"").c_str());
+      //msg(chatterchannel, ("Banning " + targetmask + " with message \"" + banmessage + "\"").c_str());
     } else {
-      msg(chatterchannel, ("Would have banned " + targetmask + " with message \"" + banmessage + "\"").c_str());
+      //msg(chatterchannel, ("Would have banned " + targetmask + " with message \"" + banmessage + "\"").c_str());
     }
   }
 }
@@ -161,8 +161,13 @@ void incoming(int type, char *username, char *userhost, char *text) {
     return;
   }
   
-  if(strchr(text, '\002') || strchr(text, '\037') || strchr(text, '\026') || strchr(text, '\017') || strchr(text, '\001')) {
+  if(strchr(text, '\002') || strchr(text, '\037') || strchr(text, '\026') || strchr(text, '\017') || strchr(text, '\001') || strchr(text, '\003')) {
     infract(username, userhost, "No color allowed.", 2);
+    return;
+  }
+
+  if(strstr(text, "12 year old TALIBAN BOY BEHEADS")) {
+    infract(username, userhost, "stop spamming your sex fantasies in here", 6);
     return;
   }
 };
